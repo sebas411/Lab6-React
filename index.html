@@ -1,315 +1,346 @@
 <html>
-    <head>
-        <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-        <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    </head>
-    <body>
-        <div id="root"></div>
-        
-        <script type="text/babel">
-            const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
-            const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
-            const htmlRoot = document.getElementById('root')
-            const css = document.createElement('style')
-            css.innerHTML = (`
-            @keyframes rotation {
-                from {
-                    transform:rotate(0deg);
-                }
-                to {
-                    transform:rotate(359deg);
-                }
-            }`)
-            document.body.append(css)
-            document.body.style='background:grey'
+  <head>
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="icon" type="image/png" href="images/tanque.png" />
+    <title>Super Maze</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+      const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+      const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+      const htmlRoot = document.getElementById('root')
+      const css = document.createElement('style')
+      css.innerHTML = (`
+      @keyframes rotation {
+          from {
+              transform:rotate(0deg);
+          }
+          to {
+              transform:rotate(359deg);
+          }
+      }
+      @font-face {
+        font-family: Chopsic;
+        src: url(Chopsic.ttf);
+      }`)
+      document.body.append(css)
+      document.body.style = 'background:grey'
 
-            const HorWall = ({squareSize}) => {
-                const style = {
-                    width: `${squareSize}px`,
-                    height: `${squareSize/2}px`,
-                    backgroundColor: 'blue',
-                    backgroundImage: "url('images/wall.jpg')",
-                    backgroundSize: 'auto 100%'
-                }
-                return <div style={style} />
-            }
+      const HorWall = ({ squareSize }) => {
+        const style = {
+          width: `${squareSize}px`,
+          height: `${squareSize / 2}px`,
+          backgroundColor: 'blue',
+          backgroundImage: "url('images/wall.jpg')",
+          backgroundSize: 'auto 100%',
+        }
+        return <div style={style} />
+      }
 
-            const VerWall = ({squareSize}) => {
-                const style = {
-                    width: `${squareSize/2}px`,
-                    height: `${squareSize}px`,
-                    backgroundColor: 'blue',
-                    backgroundImage: "url('images/wall.jpg')",
-                    backgroundSize: '100% auto'
-                }
-                return <div style={style} />
-            }
-            
-            const Corner = ({squareSize}) => {
-                const style = {
-                    width: `${squareSize/2}px`,
-                    height: `${squareSize/2}px`,
-                    backgroundColor: 'blue',
-                    backgroundImage: "url('images/wall.jpg')",
-                    backgroundSize: 'contain'
-                }
-                return <div style={style} />
-            }
+      const VerWall = ({ squareSize }) => {
+        const style = {
+          width: `${squareSize / 2}px`,
+          height: `${squareSize}px`,
+          backgroundColor: 'blue',
+          backgroundImage: "url('images/wall.jpg')",
+          backgroundSize: '100% auto',
+        }
+        return <div style={style} />
+      }
+      
+      const Corner = ({ squareSize }) => {
+        const style = {
+          width: `${squareSize / 2}px`,
+          height: `${squareSize / 2}px`,
+          backgroundColor: 'blue',
+          backgroundImage: "url('images/wall.jpg')",
+          backgroundSize: 'contain',
+        }
+        return <div style={style} />
+      }
 
-            const Goal = ({squareSize}) => {
-                const style = {
-                    width: `${squareSize}px`,
-                    height: `${squareSize}px`,
-                    backgroundImage: "url('images/flag.png'),url('images/grama.png')",
-                    backgroundSize: 'contain'
-                }
-                return <div style={style} />
-            }
+      const Goal = ({ squareSize }) => {
+        const style = {
+          width: `${squareSize}px`,
+          height: `${squareSize}px`,
+          backgroundImage: "url('images/flag.png'),url('images/grama.png')",
+          backgroundSize: 'contain',
+        }
+        return <div style={style} />
+      }
 
-            const Player = ({playerPos,squareSize,gameState}) => {
-                const rot=playerPos.dir*90
-                const style = {
-                    width: `${squareSize}px`,
-                    height: `${squareSize}px`,
-                    backgroundImage: 'url("images/tanque.png")',
-                    backgroundSize: 'contain',
-                    position: 'relative',
-                    left: playerPos.x*squareSize*1.5+'px',
-                    top: playerPos.y*squareSize*1.5+'px',
-                    transform: `rotate(${rot}deg)`,
-                    marginRight: (-squareSize)+'px'
-                }
-                if (gameState===2){
-                    style.animation= 'rotation 2s infinite linear'
-                }
-                
-                return <div style={style} />
-            }
+      const Player = ({ playerPos, squareSize, gameState }) => {
+        const rot = playerPos.dir * 90
+        const style = {
+          width: `${squareSize}px`,
+          height: `${squareSize}px`,
+          backgroundImage: 'url("images/tanque.png")',
+          backgroundSize: 'contain',
+          position: 'relative',
+          left: `${playerPos.x * squareSize * 1.5}px`,
+          top: `${playerPos.y * squareSize * 1.5}px`,
+          transform: `rotate(${rot}deg)`,
+          marginRight: `${-squareSize}px`,
+        }
+        if (gameState === 2) {
+          style.animation = 'rotation 2s infinite linear'
+        }
+        return <div style={style} />
+      }
 
-            const Empty = ({squareSize}) => {
-                const style = {
-                    width: `${squareSize}px`,
-                    height: `${squareSize}px`,
-                    backgroundColor: 'white',
-                    backgroundImage: "url('images/grama.png')",
-                    backgroundSize: 'contain'
-                }
-                return <div style={style} />
-            }
+      const Empty = ({ squareSize }) => {
+        const style = {
+          width: `${squareSize}px`,
+          height: `${squareSize}px`,
+          backgroundColor: 'white',
+          backgroundImage: "url('images/grama.png')",
+          backgroundSize: 'contain',
+        }
+        return <div style={style} />
+      }
 
-            const HorSpace = ({squareSize}) => {
-                const style = {
-                    width: `${squareSize}px`,
-                    height: `${squareSize/2}px`,
-                    backgroundColor: 'white',
-                    backgroundImage: "url('images/grama.png')",
-                    backgroundSize: '100% auto'
-                }
-                return <div style={style} />
-            }
+      const HorSpace = ({ squareSize }) => {
+        const style = {
+          width: `${squareSize}px`,
+          height: `${squareSize / 2}px`,
+          backgroundColor: 'white',
+          backgroundImage: "url('images/grama.png')",
+          backgroundSize: '100% auto',
+        }
+        return <div style={style} />
+      }
 
-            const VerSpace = ({squareSize}) => {
-                const style = {
-                    width: `${squareSize/2}px`,
-                    height: `${squareSize}px`,
-                    backgroundColor: 'white',
-                    backgroundImage: "url('images/grama.png')",
-                    backgroundSize: 'auto 100%'
-                }
-                return <div style={style} />
-            }
+      const VerSpace = ({ squareSize }) => {
+        const style = {
+          width: `${squareSize / 2}px`,
+          height: `${squareSize}px`,
+          backgroundColor: 'white',
+          backgroundImage: "url('images/grama.png')",
+          backgroundSize: 'auto 100%',
+        }
+        return <div style={style} />
+      }
 
-            const Game = () => {
-                const [mazeData, setMazeData] = React.useState([])
-                const [playerPos, setPlayerPos] = React.useState({ x: 0, y:0, dir:0})
-                const [gameState,setGameState] = React.useState(0)
-                const [dims,setDims] = React.useState([10,10])
-                const [squareSize, setSquareSize] = React.useState(0)
-                const [moves, setMoves] = React.useState(0)
+      const Game = () => {
+        const [mazeData, setMazeData] = React.useState([])
+        const [playerPos, setPlayerPos] = React.useState({ x: 0, y: 0, dir: 0 })
+        const [gameState, setGameState] = React.useState(0)
+        const [dims, setDims] = React.useState([10, 10])
+        const [squareSize, setSquareSize] = React.useState(0)
+        const [moves, setMoves] = React.useState(0)
 
-                React.useEffect(() => {
-                    fetch(`http://ubeje.xyz:3001/?type=json&w=${dims[0]}&h=${dims[1]}`)
-                    .then(r => r.json())
-                    .then(r => {
-                        //mejorar formato entrante para facilidad de procesamiento
-                        let j=0
-                        const reformat=r.map((oldRow)=>{
-                            const newRow=[]
-                            let temp=''
-                            for(let i=0;i<oldRow.length;i++){
-                                if(i%3===0){
-                                    newRow.push(oldRow[i])
-                                }else if(i%3===1){
-                                    temp=oldRow[i]
-                                }else{
-                                    temp+=oldRow[i]
-                                    if(temp==="  " && j%2===0){
-                                        temp=", "
-                                    }
-                                    newRow.push(temp)
-                                }
-                            }
-                            j++
-                            return newRow
-                        })
-                        setSquareSize(Math.min(vw*0.6/dims[0],vh*0.55/dims[1]))
-                        setMazeData(reformat)
-                    })
-                }, [dims])
-
-                React.useEffect(() => {
-                    if (playerPos.x+1==dims[0] && playerPos.y+1==dims[1]) setGameState(2)
-                },[playerPos])
-
-                const mazeStyle = {
-                    margin: '0 auto'
-                }
-                const rowStyles = {
-                    display: 'flex',
-                    justifyContent: 'center'
-                }
-                const menuStyle = {
-                    width:`${vw*0.98}px`,
-                    height:`${vh*0.98}px`,
-                    background:"rgb(150 150 150 / 60%)",
-                    position:"fixed",
-                    margin:"0 auto",
-                    zIndex: 1,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column'
-                }
-                const winStyle = {
-                    width:`${vw*0.98}px`,
-                    height:`${vh*0.98}px`,
-                    background:"rgb(150 150 150 / 80%)",
-                    position:"fixed",
-                    margin:"0 auto",
-                    zIndex: 1,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    color: 'white'
-                }
-                if (gameState===0){
-                    winStyle.display="none"
-                    menuStyle.display="flex"
-                } else if (gameState===1){
-                    menuStyle.display="none"
-                    winStyle.display="none"
-                } else {
-                    menuStyle.display="none"
-                    winStyle.display="flex"
-                }
-
-                const generate = () => {
-                    const width=document.getElementById('width').value
-                    const height=document.getElementById('height').value
-                    if (width!='' && height!=''){
-                        setDims(() => [width,height])
+        React.useEffect(() => {
+          fetch(`http://ubeje.xyz:3001/?type=json&w=${dims[0]}&h=${dims[1]}`)
+            .then((r) => r.json())
+            .then((r) => {
+              // mejorar formato entrante para facilidad de procesamiento
+              let j = 0
+              const reformat = r.map((oldRow) => {
+                const newRow = []
+                let temp = ''
+                for (let i = 0; i < oldRow.length; i += 1) {
+                  if (i % 3 === 0) {
+                    newRow.push(oldRow[i])
+                  } else if (i % 3 === 1) {
+                    temp = oldRow[i]
+                  } else {
+                    temp += oldRow[i]
+                    if (temp === '  ' && j % 2 === 0) {
+                      temp = ', '
                     }
-                    setGameState(1)
+                    newRow.push(temp)
+                  }
                 }
+                j += 1
+                return newRow
+              })
+              setSquareSize(Math.min((vw * 0.6) / dims[0], (vh * 0.55) / dims[1]))
+              setMazeData(reformat)
+            })
+        }, [dims])
 
-                const handleKeyDown = (event) => {
-                    if (gameState!==2) {
-                        if (event.key==='ArrowRight'){
-                            setPlayerPos((oldValue) => {
-                                const newValue={x: oldValue.x+1, y: oldValue.y, dir:1}
-                                if (newValue.x<dims[0]&&mazeData[2*oldValue.y+1][2*oldValue.x+2]!=='|'){
-                                    setMoves(inicial => inicial+1)
-                                    return newValue
-                                } else{
-                                    return oldValue
-                                }
-                            })
-                        } else if (event.key==='ArrowLeft'){
-                            setPlayerPos((oldValue) => {
-                                const newValue={x: oldValue.x-1, y: oldValue.y, dir:3}
-                                if (oldValue.x>0&&mazeData[2*oldValue.y+1][2*oldValue.x]!=='|'){
-                                    setMoves(inicial => inicial+1)
-                                    return newValue
-                                } else{
-                                    return oldValue
-                                }
-                            })
-                        } else if (event.key==='ArrowUp'){
-                            setPlayerPos((oldValue) => {
-                                const newValue={x: oldValue.x, y: oldValue.y-1, dir:0}
-                                if (oldValue.y>0&&mazeData[2*oldValue.y][2*oldValue.x+1]!=='--'){
-                                    setMoves(inicial => inicial+1)
-                                    return newValue
-                                } else{
-                                    return oldValue
-                                }
-                            })
-                        } else if (event.key==='ArrowDown'){
-                            setPlayerPos((oldValue) => {
-                                const newValue={x: oldValue.x, y: oldValue.y+1, dir:2}
-                                if (newValue.y<dims[1]&&mazeData[2*oldValue.y+2][2*oldValue.x+1]!=='--'){
-                                    setMoves(inicial => inicial+1)
-                                    return newValue
-                                } else{
-                                    return oldValue
-                                }
-                            })
-                        }
-                    }
+        React.useEffect(() => {
+          if (playerPos.x + 1 === dims[0] && playerPos.y + 1 === dims[1]) setGameState(2)
+        }, [playerPos])
+
+        const mazeStyle = {
+          margin: '0 auto',
+        }
+        const rowStyles = {
+          display: 'flex',
+          justifyContent: 'center',
+        }
+        const inputStyle = {
+          margin: '20px',
+          background: '#a1a1a1',
+          borderRadius: '20px',
+          padding: '10px',
+          fontSize: '25px',
+        }
+        const buttonStyle = {
+          padding: '10px',
+          fontSize: '25px',
+          borderRadius: '20px',
+          background: '#6da4de',
+        }
+        const titleStyle = {
+          fontFamily: 'Chopsic',
+          fontSize: '100px',
+          color: 'green',
+          margin: '30px 0',
+          WebkitTextStroke: '3px black',
+        }
+        const menuStyle = {
+          width: `${vw * 0.98}px`,
+          height: `${vh * 0.98}px`,
+          background: 'rgb(150 150 150 / 60%)',
+          position: 'fixed',
+          margin: '0 auto',
+          zIndex: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }
+        const winStyle = {
+          width: `${vw * 0.98}px`,
+          height: `${vh * 0.98}px`,
+          background: 'rgb(150 150 150 / 80%)',
+          position: 'fixed',
+          margin: '0 auto',
+          zIndex: 1,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+          color: 'white',
+        }
+        if (gameState === 0) {
+          winStyle.display = 'none'
+          menuStyle.display = 'flex'
+        } else if (gameState === 1) {
+          menuStyle.display = 'none'
+          winStyle.display = 'none'
+        } else {
+          menuStyle.display = 'none'
+          winStyle.display = 'flex'
+        }
+
+        const generate = () => {
+          const width = document.getElementById('width').value
+          const height = document.getElementById('height').value
+          if (width !== '' && height !== '') {
+            setDims(() => [parseInt(width, 10), parseInt(height, 10)])
+          }
+          setGameState(1)
+          setPlayerPos({ x: 0, y: 0, dir: 0 })
+          setMoves(0)
+        }
+        const playAgain = () => {
+          setGameState(0)
+        }
+
+        const handleKeyDown = (event) => {
+          if (gameState !== 2) {
+            if (event.key === 'ArrowRight') {
+              setPlayerPos((oldValue) => {
+                const newValue = { x: oldValue.x + 1, y: oldValue.y, dir: 1 }
+                if (newValue.x < dims[0] && mazeData[2 * oldValue.y + 1][2 * oldValue.x + 2] !== '|') {
+                  setMoves((inicial) => inicial + 1)
+                  return newValue
                 }
-
-                
-                
-                return ([
-                    <div style={menuStyle}>
-                        <div style={{margin:'20px'}}> Ancho: <input id='width' type='number'/></div>
-                        <div style={{margin:'20px'}}>Alto: <input id='height' type='number'/></div>
-                        <button onClick={generate}>Generar</button>
-                    </div>,
-                    <div style={winStyle}>
-                        <h1>¡Felicidades! Logró completar el laberinto</h1>
-                        <h2>Lo logró completar en {moves} movimientos</h2>
-                    </div>,
-                    <div style={{display: 'flex', justifyContent: 'center', fontSize: 0.05*vh+'px'}}>
-                        Movimientos: {moves}
-                    </div>,
-                    <div tabIndex="0" style={mazeStyle} onKeyDown={handleKeyDown}>
-                        {mazeData.map((row) => {
-                        return (
-                        <div style={rowStyles}>
-                            {row.map((cell) => {
-                            switch(cell) {
-                                case 'p ':
-                                return [<Player playerPos={playerPos} squareSize={squareSize} gameState={gameState}/>,<Empty squareSize={squareSize} />]
-                                case ' g':
-                                return <Goal squareSize={squareSize}/>
-                                case '  ':
-                                return <Empty squareSize={squareSize}/>
-                                case ' ':
-                                return <VerSpace squareSize={squareSize}/>
-                                case ', ':
-                                return <HorSpace squareSize={squareSize}/>
-                                case '|':
-                                return <VerWall squareSize={squareSize}/>
-                                case '--':
-                                return <HorWall squareSize={squareSize}/>
-                                default:
-                                return <Corner squareSize={squareSize}/>
-                            }
-                            })}
-                        </div>
-                        )
-                    })}
-                    </div>
-                ]) 
+                return oldValue
+              })
+            } else if (event.key === 'ArrowLeft') {
+              setPlayerPos((oldValue) => {
+                const newValue = { x: oldValue.x - 1, y: oldValue.y, dir: 3 }
+                if (oldValue.x > 0 && mazeData[2 * oldValue.y + 1][2 * oldValue.x] !== '|') {
+                  setMoves((inicial) => inicial + 1)
+                  return newValue
+                } return oldValue
+              })
+            } else if (event.key === 'ArrowUp') {
+              setPlayerPos((oldValue) => {
+                const newValue = { x: oldValue.x, y: oldValue.y - 1, dir: 0 }
+                if (oldValue.y > 0 && mazeData[2 * oldValue.y][2 * oldValue.x + 1] !== '--') {
+                  setMoves((inicial) => inicial + 1)
+                  return newValue
+                } return oldValue
+              })
+            } else if (event.key === 'ArrowDown') {
+              setPlayerPos((oldValue) => {
+                const newValue = { x: oldValue.x, y: oldValue.y + 1, dir: 2 }
+                if (newValue.y < dims[1] && mazeData[2 * oldValue.y + 2][2 * oldValue.x + 1] !== '--') {
+                  setMoves((inicial) => inicial + 1)
+                  return newValue
+                } return oldValue
+              })
             }
+          }
+        }
+      
+        return ([
+          <div style={menuStyle}>
+            <h1 style={titleStyle}>Super Maze</h1>
+            <div style={inputStyle}>
+              {'Ancho: '}
+              <input id="width" type="number" />
+            </div>
+            <div style={inputStyle}>
+              {'Alto: '}
+              <input id="height" type="number" />
+            </div>
+            <button onClick={generate} type="button" style={buttonStyle}>Generar</button>
+          </div>,
+          <div style={winStyle}>
+            <h1>¡Felicidades! Logró completar el laberinto</h1>
+            <h2>
+              {`Lo logró completar en ${moves} movimientos`}
+            </h2>
+            <button type="button" onClick={playAgain} style={buttonStyle}>Volver a jugar</button>
+          </div>,
+          <div style={{ display: 'flex', justifyContent: 'center', fontSize: `${0.05 * vh}px` }}>
+            {`Movimientos: ${moves}`}
+          </div>,
+          <div tabIndex="0" role="button" style={mazeStyle} onKeyDown={handleKeyDown}>
+            {mazeData.map((row) => (
+              <div style={rowStyles}>
+                {row.map((cell) => {
+                  switch (cell) {
+                    case 'p ':
+                      return [
+                        <Player playerPos={playerPos} squareSize={squareSize} gameState={gameState} />,
+                        <Empty squareSize={squareSize} />]
+                    case ' g':
+                      return <Goal squareSize={squareSize} />
+                    case '  ':
+                      return <Empty squareSize={squareSize} />
+                    case ' ':
+                      return <VerSpace squareSize={squareSize} />
+                    case ', ':
+                      return <HorSpace squareSize={squareSize} />
+                    case '|':
+                      return <VerWall squareSize={squareSize} />
+                    case '--':
+                      return <HorWall squareSize={squareSize} />
+                    default:
+                      return <Corner squareSize={squareSize} />
+                  }
+                })}
+              </div>
+            ))}
+          </div>,
+        ])
+      }
 
-            ReactDOM.render(
-                <Game style=''/>,
-                htmlRoot
-            ) 
-        </script>
-    </body>
+      ReactDOM.render(
+        <Game />,
+        htmlRoot,
+      )
+    </script>
+  </body>
 </html>
